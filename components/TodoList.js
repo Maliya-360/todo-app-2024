@@ -131,15 +131,23 @@ export default function TodoList() {
   const opacityValue = useRef(new Animated.Value(1)).current;
   
   useEffect(() => {
-    const storedTasks = JSON.parse(window.localStorage.getItem('tasks')) || [];
-    setTasks(storedTasks);
+    const storedTasks = localStorageAvailable() ? JSON.parse(localStorage.getItem('tasks')) : [];
+    setTasks(storedTasks || []);
   }, []);
 
   useEffect(() => {
-    window.localStorage.setItem('tasks', JSON.stringify(tasks));
+    if (localStorageAvailable()) {
+      localStorage.setItem('tasks', JSON.stringify(tasks));
+    }
   }, [tasks]);
 
-  
+  const localStorageAvailable = () => {
+    try {
+      return typeof localStorage !== 'undefined';
+    } catch (error) {
+      return false;
+    }
+  };
 
   const animateClearButton = () => {
     Animated.sequence([
